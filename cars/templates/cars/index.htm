@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" 
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css">
+
+    <link rel="stylesheet" type="text/css" 
+    href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script type="text/javascript" 
+        src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalouge | Forza Motorsport</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #c4c4c4">
+        <div class="container-fluid">
+            <a href="/cars" class="navbar-brand">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Forza_Motorsport_logo.svg/2560px-Forza_Motorsport_logo.svg.png"
+                width="132" height="24">
+            </a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="navbar-item">
+                    <a href="testdrive" class="nav-link"><i class="fas fa-car"></i> Test Drive</a>
+                </li>
+                <li class="navbar-item">
+                    <a href="enquiry" class="nav-link"><i class="fas fa-question-circle"></i> Enquiry</a>
+                </li>
+                {% if request.user.is_superuser %}
+                    <li class="navbar-item">
+                        <a href="{% url 'admin:index' %}" class="nav-link"><i class="fas fa-user-secret"></i> Admin</a>
+                    </li>
+                {% endif %}
+                {% if user.is_authenticated %}
+                    <li class="navbar-item">
+                        <a href="{% url 'logout' %}" class="nav-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </li>
+                {% else %}
+                    <li class="navbar-item">
+                        <a href="{% url 'login' %}" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+                    </li>
+                {% endif %}
+            </ul>
+            {% if user.is_authenticated %}
+                <span class="navbar-text">
+                    <h6 class="lead"><i class="fas fa-user-circle"></i> Hello, {{ user.get_username }}!</h6>
+                </span>
+            {% endif %}
+        </div>
+    </nav>
+    <br>
+    {% load humanize %}
+    <div class="container-md">
+        <h1 class="display-4">Our Catalouge</h1>
+        <p class="lead">Browse our amazing list of cars.</p>
+        <br>
+        {% if carList %}
+        <table id="carsTable" class="display">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cars in carList %}
+                    <tr>
+                        <td>
+                            <img src="{{ cars.image.url }}" alt="{{ cars.manufacturer }} {{ cars.carModel }}" width=250 height=141>
+                            <small>Added {{ cars.dateAdded|naturaltime }}</small>
+                        </td>
+                        <td>
+                            <h5 class="mb-1"><strong>{{ cars.manufacturer }} {{ cars.carModel }}</strong></h5>
+                            <hr style="width:20px">
+                            <p class="mb-2">{{ cars.shortDesc }}</p>
+                            <br>
+                            <a href="{% url 'cars:details' cars.id %}">
+                                <button type="button" class="btn btn-success" style="float: right;"><i class="fas fa-info-circle"></i> View</button>
+                            </a>
+                        </td>
+                        <td><small>RM {{ cars.price|intcomma }}</small></td>
+                    </tr>
+                {% endfor %}
+        </table>
+        {% else %}
+            <p>No cars are available.</p>
+        {% endif %}
+    </div>
+
+    <footer class="page-footer font-small">
+        <div class="footer-copyright text-center py-3">
+            <small><i>(c) 2021 Copyright: Nicholas Cheah (ID: 2122570)</i></small>
+        </div>
+    </footer>
+
+    <script>
+        $(document).ready(function() {
+            $('#carsTable').DataTable({
+                "paging": true
+            }
+
+            );
+        } );
+    </script>
+
+</body>
+</html>
